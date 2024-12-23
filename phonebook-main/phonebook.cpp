@@ -1,152 +1,154 @@
-#include<iostream>
-#include<thread>
-#include<chrono>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <iomanip>
 using namespace std;
 
-void start();
 int menu();
-int k = 0;
+
+struct Contact {
+    string name;
+    string number;
+};
 
 int main() {
-    start();
-    string name[100], no[100];
-    int check;
-    int Total_contacts = 0;
-    check = menu();
+    vector<Contact> contacts;
+    int choice;
+
     do {
-        // Add Contact
-        if (check == 1) {
-            cout << "\t\t\t\t\t\tName : ";
-            cin >> name[k];
-            cout << "\t\t\t\t\t\tPhone No. :";
-            cin >> no[k];
-            k++;
-            Total_contacts++;
-        }
+        choice = menu();
 
-        // Display Contact
-        else if (check == 2) {
-            int check2 = 0;
-            for (int i = 0; i < k; i++) {
-                if (name[i] != "") {
-                    cout << "\t\t\t\t\t\tName : " << name[i] << "          Phone : " << no[i] << endl;
-                    check2++;
+        if (choice == 1) {  // Add Contact
+            Contact newContact;
+            cout << "\t\t\t\t\t\tName: ";
+            cin.ignore(); // Clear the input buffer
+            getline(cin, newContact.name); // Use getline to allow spaces in the name
+            cout << "\t\t\t\t\t\tPhone No.: ";
+            cin >> newContact.number;
+            contacts.push_back(newContact);
+            cout << "\t\t\t\t\t\tContact Added Successfully!\n";
+        }
+        
+        else if (choice == 2) {  // Display Contacts
+            if (contacts.empty()) {
+                cout << "\t\t\t\t\t\tYour Contact List is Empty\n";
+            } else {
+                cout << "\t\t\t\t\t\t---------------------------------------------\n";
+                cout << "\t\t\t\t\t\t| " << setw(20) << left << "Name" 
+                     << " | " << setw(15) << left << "Phone" << " |\n";
+                cout << "\t\t\t\t\t\t---------------------------------------------\n";
+                for (const auto &contact : contacts) {
+                    cout << "\t\t\t\t\t\t| " << setw(20) << left << contact.name
+                         << " | " << setw(15) << left << contact.number << " |\n";
+                }
+                cout << "\t\t\t\t\t\t---------------------------------------------\n";
+            }
+        }
+        
+        else if (choice == 3) {  // Search by Number
+            string searchNumber;
+            cout << "\t\t\t\t\t\tNumber: ";
+            cin >> searchNumber;
+            bool found = false;
+            for (const auto &contact : contacts) {
+                if (contact.number == searchNumber) {
+                    cout << "\t\t\t\t\t\tNumber Found\n";
+                    cout << "\t\t\t\t\t\tName: " << contact.name
+                         << "          Phone: " << contact.number << "\n";
+                    found = true;
+                    break;
                 }
             }
-            if (check2 == 0) {
-                cout << "\t\t\t\t\t\tYour Contact list is empty";
+            if (!found) {
+                cout << "\t\t\t\t\t\tThis Number is Not Found in Your Contact List\n";
             }
         }
-
-        // Search by Number
-        else if (check == 3) {
-            string temp;
-            cout << "\t\t\t\t\t\tNumber : ";
-            cin >> temp;
-            int check2 = 0;
-
-            for (int i = 0; i < k; i++) {
-                if (no[i] == temp) {
-                    cout << "\t\t\t\t\t\tNumber is found\n";
-                    cout << "\t\t\t\t\t\tName : " << name[i] << "          Phone : " << no[i] << endl;
-                    check2++;
+        
+        else if (choice == 4) {  // Search by Name
+            string searchName;
+            cout << "\t\t\t\t\t\tName: ";
+            cin >> searchName;
+            bool found = false;
+            for (const auto &contact : contacts) {
+                if (contact.name == searchName) {
+                    cout << "\t\t\t\t\t\tName Found\n";
+                    cout << "\t\t\t\t\t\tName: " << contact.name
+                         << "          Phone: " << contact.number << "\n";
+                    found = true;
+                    break;
                 }
             }
-            if (check2 == 0) {
-                cout << "\t\t\t\t\t\t This Number is Not Found in your contact list\n";
+            if (!found) {
+                cout << "\t\t\t\t\t\tThis Name is Not Found in Your Contact List\n";
             }
         }
-
-        // Search by Name
-        else if (check == 4) {
-            string temp;
-            cout << "\t\t\t\t\t\tName : ";
-            cin >> temp;
-            int check2 = 0;
-
-            for (int i = 0; i < k; i++) {
-                if (name[i] == temp) {
-                    cout << "\t\t\t\t\t\tName is found\n";
-                    cout << "\t\t\t\t\t\tName : " << name[i] << "          Phone : " << no[i] << endl;
-                    check2++;
+        
+        else if (choice == 5) {  // Update Contact
+            string searchName;
+            cout << "\t\t\t\t\t\tName: ";
+            cin >> searchName;
+            bool found = false;
+            for (auto &contact : contacts) {
+                if (contact.name == searchName) {
+                    cout << "\t\t\t\t\t\tNew Name: ";
+                    cin >> contact.name;
+                    cout << "\t\t\t\t\t\tNew Number: ";
+                    cin >> contact.number;
+                    cout << "\t\t\t\t\t\tContact Updated Successfully!\n";
+                    found = true;
+                    break;
                 }
             }
-            if (check2 == 0) {
-                cout << "\t\t\t\t\t\t This Name is Not Found in your contact list\n";
+            if (!found) {
+                cout << "\t\t\t\t\t\tThis Name is Not Found in Your Contact List\n";
             }
         }
+        
+        else if (choice == 6) {  // Delete Contact
+            string searchName;
+            cout << "\t\t\t\t\t\tFor Deletion, Enter Name: ";
+            cin >> searchName;
+            bool found = false;
 
-        // Update
-        else if (check == 5) {
-            string temp, temp2, temp3;
-            cout << "\t\t\t\t\t\tName : ";
-            cin >> temp;
-            int check2 = 0;
-
-            for (int i = 0; i < k; i++) {
-                if (name[i] == temp) {
-                    cout << "\t\t\t\t\t\tNew Name : ";
-                    cin >> temp2;
-                    cout << "\t\t\t\t\t\tNew Number : ";
-                    cin >> temp3;
-                    name[i] = temp2;
-                    no[i] = temp3;
-                    cout << "\t\t\t\t\t\tName : " << name[i] << "          Phone : " << no[i] << endl;
-                    check2++;
-                    cout << "\t\t\t\t\t\tUpdated Successfully\n";
+            for (size_t i = 0; i < contacts.size(); ++i) {
+                if (contacts[i].name == searchName) {
+                    contacts.erase(contacts.begin() + i);
+                    cout << "\t\t\t\t\t\tContact Deleted Successfully!\n";
+                    found = true;
+                    break;
                 }
             }
-            if (check2 == 0) {
-                cout << "\t\t\t\t\t\t This Name is Not Found in your contact list\n";
+
+            if (!found) {
+                cout << "\t\t\t\t\t\tThis Name is Not Found in Your Contact List\n";
             }
         }
-
-        // Delete
-        else if (check == 6) {
-            string temp;
-            cout << "\t\t\t\t\t\tFor Delete Enter Name : ";
-            cin >> temp;
-            int check2 = 0;
-
-            for (int i = 0; i < k; i++) {
-                if (name[i] == temp) {
-                    cout << "\t\t\t\t\t\tDeleted Successfully\n";
-                    cout << "\t\t\t\t\t\tName : " << name[i] << "          Phone : " << no[i] << endl;
-                    name[i] = "";
-                    no[i] = "";
-                    check2++;
-                    Total_contacts--;
-                }
-            }
-            if (check2 == 0) {
-                cout << "\t\t\t\t\t\t This Name is Not Found in your contact list\n";
-            }
+        
+        else if (choice == 7) {  // Delete All Contacts
+            contacts.clear();
+            cout << "\t\t\t\t\t\tAll Contacts Deleted Successfully!\n";
+        }
+        
+        else if (choice == 8) {  // Number of Contacts
+            cout << "\t\t\t\t\t\tTotal Number of Contacts: " << contacts.size() << "\n";
+        }
+        
+        else if (choice == 9) {  // Exit
+            cout << "\t\t\t\t\t\tExiting...\n";
+        }
+        
+        else {
+            cout << "\t\t\t\t\t\tInvalid Choice. Please Try Again.\n";
         }
 
-        // Delete All
-        else if (check == 7) {
-            cout << "\t\t\t\t\t\tAll Deleted Successfully\n";
-            for (int i = 0; i < k; i++) {
-                name[i] = "";
-                no[i] = "";
-            }
-            k = 0;
-            Total_contacts = 0;
-        }
+    } while (choice != 9);
 
-        // Number of Contacts
-        else if (check == 8) {
-            cout << "\t\t\t\t\t\tTotal Number of Contacts are : " << Total_contacts << endl;
-        }
-
-        check = menu();
-    } while (check != 9);
     return 0;
 }
 
 int menu() {
     cout << "\n\n\n\n\n\n";
-    cout << "\t\t\t\t\t\t--------------------------------------\n";
     cout << "\t\t\t\t\t\t--------------------------------------\n";
     cout << "\t\t\t\t\t\t|        PHONE BOOK APPLICATION      |\n";
     cout << "\t\t\t\t\t\t--------------------------------------\n";
@@ -160,34 +162,11 @@ int menu() {
     cout << "\t\t\t\t\t\t|        [7] Delete All              |\n";
     cout << "\t\t\t\t\t\t|        [8] Number of Contacts      |\n";
     cout << "\t\t\t\t\t\t|                                    |\n";
+    cout << "\t\t\t\t\t\t|        [9] Exit                    |\n";
     cout << "\t\t\t\t\t\t--------------------------------------\n";
-    cout << "\t\t\t\t\t\t|                                    |\n";
-    cout << "\t\t\t\t\t\t--------------------------------------\n";
-    cout << "\t\t\t\t\t\t|              [9] Exit              |\n";
-    cout << "\t\t\t\t\t\t--------------------------------------\n";
-    int a;
-    cout << "Enter your choice: ";
-    cin >> a;
+    int choice;
+    cout << "\t\t\t\t\t\tEnter your choice: ";
+    cin >> choice;
     system("cls");
-    return a;
-}
-
-void start() {
-    cout << "\n\n\n\n\n\n\n\n\n";
-    cout << "\t\t\t\t\t\t-------------------------------------\n";
-    cout << "\t\t\t\t\t\t-------------------------------------\n";
-    cout << "\t\t\t\t\t\t      PHONE BOOK APPLICATION\n";
-    cout << "\t\t\t\t\t\t-------------------------------------\n";
-    cout << "\t\t\t\t\tLoading ";
-    char x = 219;
-    for (int i = 0; i < 35; i++) {
-        cout << x;
-        if (i < 10)
-            this_thread::sleep_for(chrono::milliseconds(300));
-        if (i >= 10 && i < 20)
-            this_thread::sleep_for(chrono::milliseconds(150));
-        if (i >= 20)
-            this_thread::sleep_for(chrono::milliseconds(25));
-    }
-    system("cls");
+    return choice;
 }
